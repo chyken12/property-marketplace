@@ -1,9 +1,10 @@
-import { SignIn } from '@clerk/nextjs'
+import React from 'react'
+import CustomSignIn from '@/components/CustomSignIn'
 
-export default function Page() {
- return (
-    <div className='flex item-center justify-center h-full '>
-       <SignIn></SignIn>
-      
+export default function SignInPage() {
+  return (
+    <div>
+      <CustomSignIn/>
     </div>
-  )}
+  )
+}

@@ -1,13 +1,10 @@
+import CustomSignUp from '@/components/CustomSignUp'
 import React from 'react'
-import { SignUp } from '@clerk/nextjs'
 
-function signup() {
-  return (
-    <div className='flex item-center justify-center h-full '>
-        <SignUp></SignUp>
-      
-    </div>
-  )
+export default function SignUpPage() {
+    return (
+        <div>
+            <CustomSignUp />
+        </div>
+    )
 }
-
-export default signup

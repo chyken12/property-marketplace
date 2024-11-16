@@ -165,7 +165,7 @@ export default function LandingPage() {
                 </div>
             ) : (
                 <div className="text-center">
-                  <Link href='/authFlow'><Button>create account</Button></Link>
+                  <Link href='/sign-up'><Button>create account</Button></Link>
                     
                 </div>
             )}
