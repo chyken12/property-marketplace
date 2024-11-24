@@ -3,10 +3,10 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Link from "next/link"
 import Image from "next/image"
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardFooter  } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -16,9 +16,11 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Building, Home, Search, UserPlus, CheckCircle, Star, ArrowRight, MessageCircle, Menu, Moon, Sun } from "lucide-react"
-import { SignIn,SignUp, UserProfile } from '@clerk/nextjs'
+import { Building, Home, Search, UserPlus, CheckCircle, Star, ArrowRight, MessageCircle, Menu, Moon, Sun, Bed, Bath, SquareFoot, MapPin, DollarSign } from "lucide-react"
+import { SignIn,SignUp, UserButton, UserProfile } from '@clerk/nextjs'
 import { useUser , useSignOut } from '@clerk/nextjs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
 
 
 export default function LandingPage() {
@@ -35,6 +37,7 @@ export default function LandingPage() {
     offset: ["start start", "end start"]
   })
   const opacity = useTransform(scrollYProgress, [0, 1], [1, 0])
+  const [activeListingType, setActiveListingType] = useState('all')
 
   const [searchParams, setSearchParams] = useState({
     location: '',
@@ -136,6 +139,78 @@ export default function LandingPage() {
     { q: "How do I report a problem with a listing or user?", a: "We have a dedicated support team to handle any issues. You can report a problem directly through the listing page or contact our support team via the help center." },
   ]
 
+  const featuredListings = [
+    {
+      id: 1,
+      title: "Modern Downtown Apartment",
+      image: "/placeholder.svg?height=300&width=400",
+      price: 1500,
+      beds: 2,
+      baths: 2,
+      sqft: 1000,
+      location: "Downtown, City Center",
+      type: "Apartment"
+    },
+    {
+      id: 2,
+      title: "Cozy Suburban House",
+      image: "/placeholder.svg?height=300&width=400",
+      price: 2200,
+      beds: 3,
+      baths: 2.5,
+      sqft: 1800,
+      location: "Quiet Neighborhood, Suburb",
+      type: "House"
+    },
+    {
+      id: 3,
+      title: "Luxury Waterfront Condo",
+      image: "/placeholder.svg?height=300&width=400",
+      price: 3500,
+      beds: 3,
+      baths: 3,
+      sqft: 2200,
+      location: "Waterfront, Marina District",
+      type: "Condo"
+    },
+    {
+      id: 4,
+      title: "Charming Studio in Arts District",
+      image: "/placeholder.svg?height=300&width=400",
+      price: 1200,
+      beds: 1,
+      baths: 1,
+      sqft: 600,
+      location: "Arts District, Downtown",
+      type: "Apartment"
+    },
+    {
+      id: 5,
+      title: "Family-Friendly Townhouse",
+      image: "/placeholder.svg?height=300&width=400",
+      price: 2800,
+      beds: 4,
+      baths: 3,
+      sqft: 2400,
+      location: "Family Neighborhood, Suburbs",
+      type: "House"
+    },
+    {
+      id: 6,
+      title: "Penthouse with City Views",
+      image: "/placeholder.svg?height=300&width=400",
+      price: 5000,
+      beds: 3,
+      baths: 3.5,
+      sqft: 3000,
+      location: "City Center, Skyline District",
+      type: "Condo"
+    }
+  ]
+  const filteredListings = activeListingType === 'all' 
+  ? featuredListings 
+  : featuredListings.filter(listing => listing.type.toLowerCase() === activeListingType)
+
   return (
     <div className={`flex flex-col min-h-screen bg-background text-foreground ${isDarkMode ? 'dark' : ''}`}>
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border">
@@ -161,7 +236,7 @@ export default function LandingPage() {
           <div className="flex items-center space-x-4">
           {isSignedIn ? (
                 <div className="user-profile-container">
-                   <Link href='/userProfile'> <Button>profile</Button></Link> 
+                  <UserButton/>
                 </div>
             ) : (
                 <div className="text-center">
@@ -214,7 +289,7 @@ export default function LandingPage() {
             className="absolute inset-0 w-full h-full"
           >
             <Image
-              src="/placeholder.svg?height=1080&width=1920"
+              src="/banner.jpg"
               alt="Modern apartment interior"
               layout="fill"
               objectFit="cover"
@@ -287,29 +362,245 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section id="features" className="py-24">
+        <section id="listings" className="py-24">
           <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center mb-12">Why Choose RentMarketplace?</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {features.map((feature, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                >
-                  <Card className="h-full hover:shadow-lg transition-all duration-300">
-                    <CardContent className="p-6 flex flex-col items-center text-center">
-                      <feature.icon className="w-12 h-12 text-primary mb-4" size={48} />
-                      <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                      <p className="text-muted-foreground">{feature.description}</p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
+            <h2 className="text-3xl font-bold text-center mb-12">Featured Listings</h2>
+            <Tabs defaultValue="all" className="w-full mb-8">
+              <TabsList className="grid w-full grid-cols-4 mb-8">
+                <TabsTrigger value="all" onClick={() => setActiveListingType('all')}>All</TabsTrigger>
+                <TabsTrigger value="apartment" onClick={() => setActiveListingType('apartment')}>Apartments</TabsTrigger>
+                <TabsTrigger value="house" onClick={() => setActiveListingType('house')}>Houses</TabsTrigger>
+                <TabsTrigger value="condo" onClick={() => setActiveListingType('condo')}>Condos</TabsTrigger>
+              </TabsList>
+              <TabsContent value="all">
+                <AnimatePresence>
+                  <motion.div 
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    {filteredListings.map((listing) => (
+                      <motion.div
+                        key={listing.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.5 }}
+                      >
+                        <Card className="overflow-hidden hover:shadow-lg transition-all duration-300">
+                          <Image
+                            src={listing.image}
+                            alt={listing.title}
+                            width={400}
+                            height={300}
+                            className="w-full h-48 object-cover"
+                          />
+                          <CardContent className="p-6">
+                            <h3 className="text-xl font-semibold mb-2">{listing.title}</h3>
+                            <p className="text-2xl font-bold text-primary mb-4">${listing.price}/month</p>
+                            <div className="flex justify-between mb-4">
+                              <div className="flex items-center">
+                                <Bed className="w-5 h-5 mr-1" />
+                                <span>{listing.beds} beds</span>
+                              </div>
+                              <div className="flex items-center">
+                                <Bath className="w-5 h-5 mr-1" />
+                                <span>{listing.baths} baths</span>
+                              </div>
+                              <div className="flex items-center">
+                               
+                              </div>
+                            </div>
+                            <div className="flex items-center mb-2">
+                              <MapPin className="w-5 h-5 mr-1 text-muted-foreground" />
+                              <p className="text-muted-foreground">{listing.location}</p>
+                            </div>
+                            <Badge>{listing.type}</Badge>
+                          </CardContent>
+                          <CardFooter className="bg-secondary/10 p-4">
+                            <Button className="w-full">View Details</Button>
+                          </CardFooter>
+                        </Card>
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                </AnimatePresence>
+              </TabsContent>
+              <TabsContent value="apartment">
+                <AnimatePresence>
+                  <motion.div 
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    {filteredListings.map((listing) => (
+                      <motion.div
+                        key={listing.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.5 }}
+                      >
+                        <Card className="overflow-hidden hover:shadow-lg transition-all duration-300">
+                          <Image
+                            src={listing.image}
+                            alt={listing.title}
+                            width={400}
+                            height={300}
+                            className="w-full h-48 object-cover"
+                          />
+                          <CardContent className="p-6">
+                            <h3 className="text-xl font-semibold mb-2">{listing.title}</h3>
+                            <p className="text-2xl font-bold text-primary mb-4">${listing.price}/month</p>
+                            <div className="flex justify-between mb-4">
+                              <div className="flex items-center">
+                                <Bed className="w-5 h-5 mr-1" />
+                                <span>{listing.beds} beds</span>
+                              </div>
+                              <div className="flex items-center">
+                                <Bath className="w-5 h-5 mr-1" />
+                                <span>{listing.baths} baths</span>
+                              </div>
+                              <div className="flex items-center">
+                                
+                              </div>
+                            </div>
+                            <div className="flex items-center mb-2">
+                              <MapPin className="w-5 h-5 mr-1 text-muted-foreground" />
+                              <p className="text-muted-foreground">{listing.location}</p>
+                            </div>
+                            <Badge>{listing.type}</Badge>
+                          </CardContent>
+                          <CardFooter className="bg-secondary/10 p-4">
+                            <Button className="w-full">View Details</Button>
+                          </CardFooter>
+                        </Card>
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                </AnimatePresence>
+              </TabsContent>
+              <TabsContent value="house">
+                <AnimatePresence>
+                  <motion.div 
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    {filteredListings.map((listing) => (
+                      <motion.div
+                        key={listing.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.5 }}
+                      >
+                        <Card className="overflow-hidden hover:shadow-lg transition-all duration-300">
+                          <Image
+                            src={listing.image}
+                            alt={listing.title}
+                            width={400}
+                            height={300}
+                            className="w-full h-48 object-cover"
+                          />
+                          <CardContent className="p-6">
+                            <h3 className="text-xl font-semibold mb-2">{listing.title}</h3>
+                            <p className="text-2xl font-bold text-primary mb-4">${listing.price}/month</p>
+                            <div className="flex justify-between mb-4">
+                              <div className="flex items-center">
+                                <Bed className="w-5 h-5 mr-1" />
+                                <span>{listing.beds} beds</span>
+                              </div>
+                              <div className="flex items-center">
+                                <Bath className="w-5 h-5 mr-1" />
+                                <span>{listing.baths} baths</span>
+                              </div>
+                              <div className="flex items-center">
+                                <SquareFoot className="w-5 h-5 mr-1" />
+                                <span>{listing.sqft} sqft</span>
+                              </div>
+                            </div>
+                            <div className="flex items-center mb-2">
+                              <MapPin className="w-5 h-5 mr-1 text-muted-foreground" />
+                              <p className="text-muted-foreground">{listing.location}</p>
+                            </div>
+                            <Badge>{listing.type}</Badge>
+                          </CardContent>
+                          <CardFooter className="bg-secondary/10 p-4">
+                            <Button className="w-full">View Details</Button>
+                          </CardFooter>
+                        </Card>
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                </AnimatePresence>
+              </TabsContent>
+              <TabsContent value="condo">
+                <AnimatePresence>
+                  <motion.div 
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    {filteredListings.map((listing) => (
+                      <motion.div
+                        key={listing.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.5 }}
+                      >
+                        <Card className="overflow-hidden hover:shadow-lg transition-all duration-300">
+                          <Image
+                            src={listing.image}
+                            alt={listing.title}
+                            width={400}
+                            height={300}
+                            className="w-full h-48 object-cover"
+                          />
+                          <CardContent className="p-6">
+                            <h3 className="text-xl font-semibold mb-2">{listing.title}</h3>
+                            <p className="text-2xl font-bold text-primary mb-4">${listing.price}/month</p>
+                            <div className="flex justify-between mb-4">
+                              <div className="flex items-center">
+                                <Bed className="w-5 h-5 mr-1" />
+                                <span>{listing.beds} beds</span>
+                              </div>
+                              <div className="flex items-center">
+                                <Bath className="w-5 h-5 mr-1" />
+                                <span>{listing.baths} baths</span>
+                              </div>
+                              <div className="flex items-center">
+                                <SquareFoot className="w-5 h-5 mr-1" />
+                                <span>{listing.sqft} sqft</span>
+                              </div>
+                            </div>
+                            <div className="flex items-center mb-2">
+                              <MapPin className="w-5 h-5 mr-1 text-muted-foreground" />
+                              <p className="text-muted-foreground">{listing.location}</p>
+                            </div>
+                            <Badge>{listing.type}</Badge>
+                          </CardContent>
+                          <CardFooter className="bg-secondary/10 p-4">
+                            <Button className="w-full">View Details</Button>
+                          </CardFooter>
+                        </Card>
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                </AnimatePresence>
+              </TabsContent>
+            </Tabs>
+            <div className="text-center mt-12">
+              <Button size="lg">View All Listings</Button>
             </div>
           </div>
         </section>
+
 
         <section id="how-it-works" className="py-24 bg-secondary">
           <div className="container mx-auto px-4">
@@ -398,7 +689,7 @@ export default function LandingPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {blogPosts.map((post, index) => (
                 <Card key={index} className="overflow-hidden hover:shadow-lg transition-all duration-300">
-                  <Image src={post.image} alt={post.title} width={300} height={200} className="w-full h-48 object-cover" />
+                  <Image src="/blog1.jpg" alt={post.title} width={300} height={200} className="w-full h-48 object-cover" />
                   <CardContent className="p-6">
                     <h3 className="text-xl font-semibold mb-2">{post.title}</h3>
                     <p className="text-muted-foreground mb-4">{post.excerpt}</p>

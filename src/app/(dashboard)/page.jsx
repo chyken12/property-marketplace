@@ -10,7 +10,7 @@ const Dashboard = () => {
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Property Dashboard</h1>
+          <h1 className="text-2xl font-bold"> LandLord Property Dashboard</h1>
           <Button>Add New Property</Button>
         </div>
         
